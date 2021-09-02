@@ -20,14 +20,19 @@ public class Stone : MonoBehaviour
             currentAvailableSteps = totalAvailableSteps - routePosition;
             Debug.Log($"Total is {totalAvailableSteps} and Current {currentAvailableSteps}");
             steps = Random.Range(1, 7);
-            if (routePosition + steps < totalAvailableSteps)
+            if (currentAvailableSteps == 0)
+            {
+                Debug.Log($"Starting CoRoutine Move To Start");
+                StartCoroutine(MoveToStart());
+            }
+            if (steps < currentAvailableSteps)
             {
                 Debug.Log($"Starting CoRoutine Move Standard {steps}"); 
                 StartCoroutine(Move());
             }
             else
             {
-                if (routePosition + steps > currentRoute.childNodeList.Count) { steps = currentRoute.childNodeList.Count - 1 - routePosition; }
+                if (steps > currentAvailableSteps) { steps = currentAvailableSteps; }
                 Debug.Log($"Starting CoRoutine Move To End {steps}");
                 StartCoroutine(Move());
             }
