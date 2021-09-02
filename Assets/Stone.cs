@@ -6,25 +6,29 @@ public class Stone : MonoBehaviour
 {
     public Route currentRoute;
 
-    private int routePosition = 0;
+    private int routePosition = 1;
     public int steps = 0;
     private bool isMoving = false;
+    private int totalAvailableSteps = 0;
+    private int currentAvailableSteps = 0;
 
     private void Update()
-    {      
+    {
         if (Input.GetKeyDown(KeyCode.Space) && !isMoving)
         {
-            steps = Random.Range(1, 6);
-            Debug.Log($"Number of Steps: {steps}, available steps = {currentRoute.childNodeList.Count}");
-            if (routePosition + steps < currentRoute.childNodeList.Count)
+            totalAvailableSteps = currentRoute.childNodeList.Count - 1;
+            currentAvailableSteps = totalAvailableSteps - routePosition;
+            Debug.Log($"Total is {totalAvailableSteps} and Current {currentAvailableSteps}");
+            steps = Random.Range(1, 7);
+            if (routePosition + steps < totalAvailableSteps)
             {
-                Debug.Log($"Starting CoRoutine Move Standard {steps}");
+                Debug.Log($"Starting CoRoutine Move Standard {steps}"); 
                 StartCoroutine(Move());
             }
             else
             {
-                steps = steps - routePosition;
-                Debug.Log($"Starting CoRoutine Move Limited {steps}");
+                if (routePosition + steps > currentRoute.childNodeList.Count) { steps = currentRoute.childNodeList.Count - 1 - routePosition; }
+                Debug.Log($"Starting CoRoutine Move To End {steps}");
                 StartCoroutine(Move());
             }
         }
@@ -45,8 +49,24 @@ public class Stone : MonoBehaviour
             steps--;
             routePosition++;
         }
-        Debug.Log($"Finish All Moves");
+        Debug.Log($"Finished All Moves");
         isMoving = false; 
+    }
+
+    IEnumerator MoveToStart()
+    {
+        if (isMoving) { yield break; }
+        isMoving = true;
+
+        Vector2 nextNode = currentRoute.childNodeList[0].position;
+        while (!MoveToNextNode(nextNode)) { yield return null; };
+        Debug.Log($"Move To Start Pos ##################################################");
+        yield return new WaitForSeconds(0.1f);
+        steps = 0;
+        routePosition = 0;
+
+        Debug.Log($"Finish Moving to Start");
+        isMoving = false;
     }
 
     bool MoveToNextNode(Vector2 goalNode)
