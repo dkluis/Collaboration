@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e1ba063ef49948358e3b7bd9396fd1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tex: {fileID: 2800000, guid: a5a9252507a33408fa88f18a0ea43ade, type: 3}
+  tex: {fileID: 0}
+  BrSq: {fileID: 0}
 --- !u!4 &19365856
 Transform:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Positions : MonoBehaviour
 {
-    Transform[] boardLocation;
+    Transform[] boardLocations;
     public List<Transform> positionsList;
 
     private void OnDrawGizmos()
@@ -25,8 +25,8 @@ public class Positions : MonoBehaviour
     void FillNodes()
     {
         positionsList.Clear();
-        boardLocation = GetComponentsInChildren<Transform>();
-        foreach (Transform location in boardLocation)
+        boardLocations = GetComponentsInChildren<Transform>();
+        foreach (Transform location in boardLocations)
         {
             if (location != this.transform)
             {

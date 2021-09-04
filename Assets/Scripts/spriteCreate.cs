@@ -3,35 +3,77 @@
 
 using UnityEngine;
 
-public class spriteCreate : MonoBehaviour
+public class spriteCreate : MonoBehaviour 
 {
     public Texture2D tex;
-    private Sprite mySprite;
     private SpriteRenderer sr;
+    public BoardSquare BrSq; //Accessing the BoardSquare Class
+
+    private bool createClicked = false;
+    private bool HideClicked = false;
+
+    private int size = 32;
 
     void Awake()
     {
-        sr = gameObject.AddComponent<SpriteRenderer>() as SpriteRenderer;
-        //sr.color = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+        Color color = Color.white;
+        transform.position = new Vector2(-2f, -2f);
+        int boardDimRows = 5;
+        int boardDimColumns = 10;
+        for (int r = 0; r < boardDimRows; r++)
+        {
+            for (int c = 0; c < boardDimColumns; c++)
+            {
+                color = Color.white;
+                if (isEven(r)&& isEven(c)) { color = Color.black; }
+                if (!isEven(r) && !isEven(c)) { color = Color.black; }
+                BrSq = new BoardSquare();
+                BrSq.Init(new Vector2(c, r), color, c, r, size);
+                BrSq.Create();
+                createClicked = true;
+            }
+        }
+    }
 
-        transform.position = new Vector2(1.5f, 1.5f);
+    bool isEven(int i)
+    {
+        if (i % 2 == 0) { return true; } else { return false; }
     }
 
     void Start()
     {
-        float scale = .5f;
-        mySprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        //mySprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
     }
 
     void OnGUI()
-    {
-        if (GUI.Button(new Rect(10, 10, 100, 30), "Add sprite"))
+    { 
+        if (GUI.Button(new Rect(10, 10, 100, 30), "Add Square"))
         {
-            sr.sprite = mySprite;
+            if (createClicked) { Debug.Log("Already Clicked Create"); return; }
+            BrSq.Create();
+            createClicked = true;
         }
-        if (GUI.Button(new Rect(10, 50, 100, 30), "Delete sprite"))
+        if (GUI.Button(new Rect(10, 50, 100, 30), "Hide Square"))
         {
-            Destroy(sr);
+            if (!createClicked) { Debug.Log("Not Created yet"); return; }
+            if (HideClicked) { Debug.Log("Already Clicked Hide"); return; }
+            Debug.Log($"Hide {BrSq.NameInfo()}");
+            BrSq.Hide();
+            HideClicked = true;
+        }
+        if (GUI.Button(new Rect(10, 90, 100, 30), "Show Square"))
+        {
+            if (!createClicked) { Debug.Log("Not Created yet"); return; }
+            if (HideClicked)
+            {
+                BrSq.Show();
+                HideClicked = false;
+                return;
+            }
+            else
+            {
+                Debug.Log($"Show Not Hidden");
+            }
         }
     }
 }
