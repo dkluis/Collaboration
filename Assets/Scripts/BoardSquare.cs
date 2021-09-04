@@ -14,18 +14,19 @@ public class BoardSquare
     protected int Row;
     protected int Column;
 
+    private GameObject board;
+
     public BoardSquare()
     {
         Debug.Log($"Creating a BoardSquare");
+        board = GameObject.Find("Board");
     }
 
     public void Init(Vector2 positions, Color color, int row, int column, int size)
     {
         GaOb = new GameObject($"Square {column + 1}-{row + 1}");
         col = color;
-        GameObject board = GameObject.Find("Board");
         spre = GaOb.AddComponent<SpriteRenderer>();
-        
         spre.color = col;
         Name = spre.name;
         Pos = new Vector2(row, column);
@@ -33,6 +34,8 @@ public class BoardSquare
         Row = row;
         Column = column;
         GaOb.transform.position = new Vector2(row, column);
+
+        GaOb.transform.parent = board.transform;
 
     }
 
