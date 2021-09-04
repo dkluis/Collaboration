@@ -18,7 +18,7 @@ public class BoardSquare
 
     public BoardSquare()
     {
-        Debug.Log($"Creating a BoardSquare");
+        //Debug.Log($"Creating a BoardSquare");
         board = GameObject.Find("Board");
     }
 
@@ -41,9 +41,8 @@ public class BoardSquare
 
     public void Create()
     {
-        Debug.Log($"Create {Name}");
+        Debug.Log($"Created {Name}");
         spre.sprite = sprite;
-        //GaOb.transform.position = Vector2.MoveTowards(transform.position, Pos, 0);
     }
 
     public void Hide()
