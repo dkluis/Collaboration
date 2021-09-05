@@ -10,19 +10,28 @@ public class spriteCreate : MonoBehaviour
     private SpriteRenderer sr;
     public BoardSquare BrSq; //Accessing the BoardSquare Class
 
-    private bool createClicked = false;
+    //private bool createClicked = false;
     //private bool HideClicked = false;
 
     private int size = 32;
 
     public List<GameObject> BoardSquares;
+    public GameObject squareTemplate;
+    private GameObject board;
+    private Transform newsquare;
+
+    bool clicked = false;
+    float birdRow;
+    float birdColumn;
 
     void Awake()
     {
+        board = GameObject.Find("Board");
         Color color = Color.white;
         transform.position = new Vector2(-2f, -2f);
-        int boardDimRows = 5;
-        int boardDimColumns = 10;
+        squareTemplate = GameObject.Find("SquareTemplate");
+        int boardDimRows = 6;
+        int boardDimColumns = 6;
         for (int r = 0; r < boardDimRows; r++)
         {
             for (int c = 0; c < boardDimColumns; c++)
@@ -30,10 +39,12 @@ public class spriteCreate : MonoBehaviour
                 color = Color.white;
                 if (isEven(r) && isEven(c)) { color = Color.black; }
                 if (!isEven(r) && !isEven(c)) { color = Color.black; }
-                BrSq = new BoardSquare();
-                BrSq.Init(new Vector2(c, r), color, c, r, size);
-                BrSq.Create();
-                createClicked = true;
+
+                newsquare = Instantiate(squareTemplate.transform, new Vector2(c - 2, r - 2), Quaternion.identity);
+                newsquare.name = $"Square {c + 1}-{r +1}";
+                newsquare.parent = board.transform;
+                GameObject col = GameObject.Find(newsquare.name);
+                col.GetComponent<Renderer>().material.color = color;
             }
         }
         GetAllSquares();
@@ -61,37 +72,42 @@ public class spriteCreate : MonoBehaviour
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect(10, 10, 100, 30), "Add Square"))
+        if (GUI.Button(new Rect(10, 10, 500, 30), "Color Square 0-2 Cyan"))
         {
-            if (createClicked) { Debug.Log("Change Color for Row 1, Column 3"); return; }
             GameObject thissquare = BoardSquares[2];
-            Debug.Log($"Name is {thissquare.name}");
-            thissquare.GetComponent<MeshRenderer>().material.color = Color.cyan;
-        }
-
-        /*
-        if (GUI.Button(new Rect(10, 50, 100, 30), "Hide Square"))
-        {
-            if (!createClicked) { Debug.Log("Not Created yet"); return; }
-            if (HideClicked) { Debug.Log("Already Clicked Hide"); return; }
-            Debug.Log($"Hide {BrSq.NameInfo()}");
-            BrSq.Hide();
-            HideClicked = true;
-        }
-        if (GUI.Button(new Rect(10, 90, 100, 30), "Show Square"))
-        {
-            if (!createClicked) { Debug.Log("Not Created yet"); return; }
-            if (HideClicked)
+            if (!clicked)
             {
-                BrSq.Show();
-                HideClicked = false;
-                return;
+                thissquare.GetComponent<Renderer>().material.color = Color.cyan;
+                clicked = true;
+                Debug.Log($"Name is {thissquare.name} and clicked = {clicked}");
             }
             else
             {
-                Debug.Log($"Show Not Hidden");
+                thissquare.GetComponent<Renderer>().material.color = Color.black;
+                clicked = false;
+                Debug.Log($"Name is {thissquare.name} and clicked = {clicked}");
             }
         }
-        */
+
+        if (GUI.Button(new Rect(10, 50, 500, 30), "Fetch Bird Token to Board Middle"))
+        {
+            GameObject BT = GameObject.Find("Bird Token Grey");
+            GameObject sqtr = GameObject.Find("Square 3-3");
+            BT.transform.position = sqtr.transform.position;
+            birdRow = BT.transform.position.x - 1;
+            birdColumn = BT.transform.position.y - 1;
+            //Need the while loop, etc to move animated
+            //BT.transform.position = Vector2.MoveTowards(BT.transform.position, sqtr.transform.position, 1f * Time.deltaTime);
+        }
+
+        if (GUI.Button(new Rect(10, 90, 500, 30), "Move Bird Token to Up"))
+        {
+            GameObject BT = GameObject.Find("Bird Token Grey");
+            birdColumn++;
+            BT.transform.position = new Vector2(birdColumn, birdRow);
+            //Need the while loop, etc to move animated
+            //BT.transform.position = Vector2.MoveTowards(BT.transform.position, sqtr.transform.position, 1f * Time.deltaTime);
+            Debug.Log($"Should have moved");
+        }
     }
 }
