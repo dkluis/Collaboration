@@ -46,7 +46,9 @@ public class Stone : MonoBehaviour
 
         while(steps > 0)
         {
-            Debug.Log($"Perform Step {steps} ---> Current Pos {routePosition} for: {currentRoute.childNodeList[routePosition].position.x}, {currentRoute.childNodeList[routePosition].position.y} <> Next Pos {routePosition + 1} is: {currentRoute.childNodeList[routePosition + 1].position.x}, {currentRoute.childNodeList[routePosition + 1].position.y}");
+            Debug.Log($"Perform Step {steps} ---> Current Pos {routePosition} for: " +
+                $"{currentRoute.childNodeList[routePosition].position.x}, {currentRoute.childNodeList[routePosition].position.y} <> " +
+                $"Next Pos {routePosition + 1} is: {currentRoute.childNodeList[routePosition + 1].position.x}, {currentRoute.childNodeList[routePosition + 1].position.y}");
             Vector2 nextNode = currentRoute.childNodeList[routePosition + 1].position;
             while (!MoveToNextNode(nextNode)) { yield return null; };
             Debug.Log($"Finish A Move to Route Pos {routePosition} via Step {steps}");
@@ -84,7 +86,6 @@ public class Stone : MonoBehaviour
         }
         else
         {
-            
             return false;
         }
     }
