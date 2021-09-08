@@ -157,22 +157,22 @@ public class spriteCreate : MonoBehaviour
             StartCoroutine(MoveTo(BT, sqtr.transform.position));
         }
 
-        if (Input.GetKey(KeyCode.UpArrow) && !isBirdMoving)
+        if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Keypad8)) && !isBirdMoving)
         {
             ExecuteMove("Up");
         }
 
-        if (Input.GetKey(KeyCode.DownArrow) && !isBirdMoving)
+        if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Keypad2)) && !isBirdMoving)
         {
             ExecuteMove("Down");
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow) && !isBirdMoving)
+        if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Keypad4)) && !isBirdMoving)
         {
             ExecuteMove("Left");
         }
 
-        if (Input.GetKey(KeyCode.RightArrow) && !isBirdMoving)
+        if ((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.Alpha6) || Input.GetKey(KeyCode.Keypad6)) && !isBirdMoving)
         {
             ExecuteMove("Right");
         }
