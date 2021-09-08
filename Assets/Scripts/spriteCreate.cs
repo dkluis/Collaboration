@@ -19,7 +19,7 @@ public class spriteCreate : MonoBehaviour
     bool isBirdMoving = false;
     bool isMouseAllowed = false;
 
-    int boardDimX = 9;
+    int boardDimX = 11;
     int boardDimY = 9;
 
     int minX;
@@ -56,6 +56,10 @@ public class spriteCreate : MonoBehaviour
         minY = int.Parse(BoardSquares[0].transform.position.y.ToString());
         maxX = int.Parse(BoardSquares[BoardSquares.Count - 1].transform.position.x.ToString());
         maxY = int.Parse(BoardSquares[BoardSquares.Count - 1].transform.position.y.ToString());
+        int bx = Mathf.RoundToInt((maxX + 1) / 2);
+        int by= Mathf.RoundToInt((maxY + 1) / 2);
+        StartCoroutine(MoveTo(BT, new Vector2(Mathf.Round((maxX + 1) / 2), Mathf.Round((maxY + 1) / 2))));
+        BT.GetComponent<birdTokenInfo>().locationSquare = $"Square {bx}-{by}";
     }
 
     void Update()
