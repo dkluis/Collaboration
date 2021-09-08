@@ -17,30 +17,42 @@ public class spriteCreate : MonoBehaviour
     float birdY;
     bool isBirdMoving = false;
 
+    int boardDimX = 9;
+    int boardDimY = 9;
+
+    int minX;
+    int maxX;
+    int minY;
+    int maxY;
+
     void Awake()
     {
         board = GameObject.Find("Board");
         Color color = Color.white;
         transform.position = new Vector2(-2f, -2f);
         squareTemplate = GameObject.Find("SquareTemplate");
-        int boardDimX = 6;
-        int boardDimY = 3;
-        for (int x = 0; x < boardDimX; x++)
+
+        for (int x = 1; x <= boardDimX; x++)
         {
-            for (int y = 0; y < boardDimY; y++)
+            for (int y = 1; y <= boardDimY; y++)
             {
                 color = Color.white;
                 if (isEven(x) && isEven(y)) { color = Color.black; }
                 if (!isEven(x) && !isEven(y)) { color = Color.black; }
 
-                newsquare = Instantiate(squareTemplate.transform, new Vector2(x - 2, y - 2), Quaternion.identity);
-                newsquare.name = $"Square {x + 1}-{y + 1}";
+                newsquare = Instantiate(squareTemplate.transform, new Vector2(x, y), Quaternion.identity);
+                newsquare.name = $"Square {x}-{y}";
                 newsquare.parent = board.transform;
+                newsquare.transform.position = new Vector2(x, y);
                 GameObject col = GameObject.Find(newsquare.name);
                 col.GetComponent<Renderer>().material.color = color;
             }
         }
         GetAllSquares();
+        minX = int.Parse(BoardSquares[0].transform.position.x.ToString());
+        minY = int.Parse(BoardSquares[0].transform.position.y.ToString());
+        maxX = int.Parse(BoardSquares[BoardSquares.Count - 1].transform.position.x.ToString());
+        maxY = int.Parse(BoardSquares[BoardSquares.Count - 1].transform.position.y.ToString());
     }
 
     bool isEven(int i)
@@ -58,16 +70,70 @@ public class spriteCreate : MonoBehaviour
         }
     }
 
-    void Start()
+    string GetUpSquare(string square)
     {
-        //mySprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        string upsquare = "";
+        GameObject sq = GameObject.Find(square);
+        
+
+        return upsquare;
     }
+
+    GameObject FindSquare(string current, string direction)
+    {
+        Debug.Log($"FindSquare with {current}, {direction}");
+        string next = "";
+        string tmp = current.Replace("Square ", "");
+        string[] x_y = tmp.Split('-');
+        int x = int.Parse(x_y[0]);
+        int y = int.Parse(x_y[1]);
+        switch (direction)
+        {
+            case "Up":
+                y++;
+                break;
+            case "Down":
+                y--;
+                break;
+            case "Left":
+                x--;
+                break;
+            case "Right":
+                x++;
+                break;
+            case "UpRight":
+                x++;
+                y++;
+                break;
+            case "DownRight":
+                x++;
+                y--;
+                break;
+            case "UpLeft":
+                x--;
+                y++;
+                break;
+            case "DownLeft":
+                x--;
+                y--;
+                break;
+            default:
+                x = -9999;
+                y = -9999;
+                break;
+        }
+        next = $"/Board/Square {x}-{y}";
+        GameObject newSquare = GameObject.Find(next);
+        if (newSquare is null) { Debug.Log($"Did not find square {next}"); }
+        return newSquare;
+    }
+
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect(10, 10, 500, 30), "Color Square 2-2 Cyan"))
+        if (GUI.Button(new Rect(10, 10, 500, 30), "Color Square 5-5 Cyan"))
         {
-            GameObject thissquare = GameObject.Find("Square 2-2");
+            GameObject thissquare = GameObject.Find("Square 5-5");
             if (!clicked)
             {
                 thissquare.GetComponent<Renderer>().material.color = Color.cyan;
@@ -85,41 +151,62 @@ public class spriteCreate : MonoBehaviour
         if (GUI.Button(new Rect(10, 50, 500, 30), "Fetch Bird Token to Board Middle"))
         {
             GameObject BT = GameObject.Find("Bird Token Grey");
-            GameObject sqtr = GameObject.Find("Square 4-2");
-            BT.transform.position = sqtr.transform.position;
-            //Need the while loop, etc to move animated
-            //BT.transform.position = Vector2.MoveTowards(BT.transform.position, sqtr.transform.position, 1f * Time.deltaTime);
-        }
-
-        if (GUI.Button(new Rect(10, 90, 500, 30), "Move Bird Token to Up"))
-        {
-            GameObject BT = GameObject.Find("Bird Token Grey");
-            StartCoroutine(MoveTo(BT, new Vector2(BT.transform.position.x, BT.transform.position.y + 1)));
+            GameObject sqtr = GameObject.Find("Square 5-5");
+            birdTokenInfo bti = BT.GetComponent<birdTokenInfo>();
+            bti.locationSquare = "Square 5-5";
+            StartCoroutine(MoveTo(BT, sqtr.transform.position));
         }
 
         if (Input.GetKey(KeyCode.UpArrow) && !isBirdMoving)
         {
-            GameObject BT = GameObject.Find("Bird Token Grey");
-            StartCoroutine(MoveTo(BT, new Vector2(BT.transform.position.x, BT.transform.position.y + 1)));
+            ExecuteMove("Up");
         }
 
-        if (Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKey(KeyCode.DownArrow) && !isBirdMoving)
         {
-            GameObject BT = GameObject.Find("Bird Token Grey");
-            StartCoroutine(MoveTo(BT, new Vector2(BT.transform.position.x, BT.transform.position.y - 1)));
+            ExecuteMove("Down");
         }
-        if (Input.GetKey(KeyCode.LeftArrow))
+
+        if (Input.GetKey(KeyCode.LeftArrow) && !isBirdMoving)
         {
-            GameObject BT = GameObject.Find("Bird Token Grey");
-            birdX = BT.transform.position.x + 1;
-            StartCoroutine(MoveTo(BT, new Vector2(BT.transform.position.x - 1, BT.transform.position.y)));
+            ExecuteMove("Left");
         }
-        if (Input.GetKey(KeyCode.RightArrow))
+
+        if (Input.GetKey(KeyCode.RightArrow) && !isBirdMoving)
         {
-            GameObject BT = GameObject.Find("Bird Token Grey");
-            birdX = BT.transform.position.x - 1;
-            StartCoroutine(MoveTo(BT, new Vector2(BT.transform.position.x + 1, BT.transform.position.y)));
+            ExecuteMove("Right");
         }
+
+        if ((Input.GetKey(KeyCode.Keypad9) || Input.GetKey(KeyCode.Alpha9)) && !isBirdMoving)
+        {
+            ExecuteMove("UpRight");
+        }
+
+        if ((Input.GetKey(KeyCode.Keypad7) || Input.GetKey(KeyCode.Alpha7)) && !isBirdMoving)
+        {
+            ExecuteMove("UpLeft");
+        }
+
+        if ((Input.GetKey(KeyCode.Keypad1) || Input.GetKey(KeyCode.Alpha1)) && !isBirdMoving)
+        {
+            ExecuteMove("DownLeft");
+        }
+
+        if ((Input.GetKey(KeyCode.Keypad3) || Input.GetKey(KeyCode.Alpha3)) && !isBirdMoving)
+        {
+            ExecuteMove("DownRight");
+        }
+
+    }
+
+    void ExecuteMove(string direction)
+    {
+        GameObject BT = GameObject.Find("Bird Token Grey");
+        BT.GetComponent<Renderer>().material.color = Color.green;
+        GameObject NextSquare = FindSquare(BT.GetComponent<birdTokenInfo>().locationSquare, direction);
+        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BT.GetComponent<Renderer>().material.color = Color.red; ; return; }
+        StartCoroutine(MoveTo(BT, new Vector2(NextSquare.transform.position.x, NextSquare.transform.position.y)));
+        BT.GetComponent<birdTokenInfo>().locationSquare = NextSquare.name;
     }
 
     IEnumerator MoveTo(GameObject GO, Vector2 topos)
@@ -133,8 +220,8 @@ public class spriteCreate : MonoBehaviour
 
     bool MoveToPos(GameObject GO, Vector2 goalNode)
     {
-        GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 2f * Time.deltaTime);
-        Debug.Log($"Goal {goalNode.x}, {goalNode.y} and pos is {GO.transform.position.x}, {GO.transform.position.y}");
+        GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 3f * Time.deltaTime);
+        //Debug.Log($"Goal {goalNode.x}, {goalNode.y} and pos is {GO.transform.position.x}, {GO.transform.position.y}");
         if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y)
         {
             return true;
