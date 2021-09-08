@@ -81,7 +81,7 @@ public class spriteCreate : MonoBehaviour
 
     GameObject FindSquare(string current, string direction)
     {
-        Debug.Log($"FindSquare with {current}, {direction}");
+        
         string next = "";
         string tmp = current.Replace("Square ", "");
         string[] x_y = tmp.Split('-');
@@ -125,6 +125,7 @@ public class spriteCreate : MonoBehaviour
         next = $"/Board/Square {x}-{y}";
         GameObject newSquare = GameObject.Find(next);
         if (newSquare is null) { Debug.Log($"Did not find square {next}"); }
+        Debug.Log($"Going to: {next}");
         return newSquare;
     }
 
