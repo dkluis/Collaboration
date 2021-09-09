@@ -247,7 +247,7 @@ public class spriteCreate : MonoBehaviour
 
     private bool MoveToPos(GameObject GO, Vector2 goalNode)
     {
-        GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 3f * Time.deltaTime);
+        GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 5f * Time.deltaTime);
         if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y) { return true; } else { return false; }
     }
 }
