@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class spriteCreate : MonoBehaviour
@@ -179,9 +180,10 @@ public class spriteCreate : MonoBehaviour
             StartCoroutine(MoveTo(BT, sqtr.transform.position));
         }
 
+
         if (GUI.Button(new Rect(10, 90, 500, 30), "Allow the Mouse to Move the Bird"))
         {
-            if (isMouseAllowed) { isMouseAllowed = false;  } else { isMouseAllowed = true; }
+            if (isMouseAllowed) { isMouseAllowed = false; } else { isMouseAllowed = true; }
         }
 
         if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Keypad8)) && !isBirdMoving)
@@ -223,7 +225,6 @@ public class spriteCreate : MonoBehaviour
         {
             ExecuteMove("DownRight");
         }
-
     }
 
     private void ExecuteMove(string direction)
@@ -250,4 +251,42 @@ public class spriteCreate : MonoBehaviour
         GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 5f * Time.deltaTime);
         if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y) { return true; } else { return false; }
     }
+
+    void Misc()
+    {
+        if (Input.GetKey(KeyCode.Joystick1Button0) ||
+          Input.GetKey(KeyCode.Joystick1Button1) ||
+          Input.GetKey(KeyCode.Joystick1Button2) ||
+          Input.GetKey(KeyCode.Joystick1Button3) ||
+          Input.GetKey(KeyCode.Joystick1Button4) ||
+          Input.GetKey(KeyCode.Joystick1Button5) ||
+          Input.GetKey(KeyCode.Joystick1Button6) ||
+          Input.GetKey(KeyCode.Joystick1Button7) ||
+          Input.GetKey(KeyCode.Joystick1Button8) ||
+          Input.GetKey(KeyCode.Joystick1Button9) ||
+          Input.GetKey(KeyCode.Joystick1Button10) ||
+          Input.GetKey(KeyCode.Joystick1Button11) ||
+          Input.GetKey(KeyCode.Joystick1Button12) ||
+          Input.GetKey(KeyCode.Joystick1Button13) ||
+          Input.GetKey(KeyCode.Joystick1Button14) ||
+          Input.GetKey(KeyCode.Joystick1Button15) ||
+          Input.GetKey(KeyCode.Joystick1Button16) ||
+          Input.GetKey(KeyCode.Joystick1Button17) ||
+          Input.GetKey(KeyCode.Joystick1Button18) ||
+          Input.GetKey(KeyCode.Joystick1Button19))
+        {
+            Debug.Log("JoyStick Button is Used");
+        }
+
+        // joystick axis
+        if (Input.GetAxis("XC Left Stick X") != 0.0f ||
+           Input.GetAxis("XC Left Stick Y") != 0.0f ||
+           Input.GetAxis("XC Triggers") != 0.0f ||
+           Input.GetAxis("XC Right Stick X") != 0.0f ||
+           Input.GetAxis("XC Right Stick Y") != 0.0f)
+        {
+            Debug.Log("JoyStick Stick is Used");
+        }
+    }
 }
+
