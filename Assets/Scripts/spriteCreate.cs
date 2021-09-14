@@ -12,7 +12,9 @@ public class spriteCreate : MonoBehaviour
     public GameObject squareTemplate;
     private GameObject board;
     private Transform newsquare;
-    private GameObject BT;
+    private GameObject BTG;
+    private GameObject BTB;
+    private GameObject BTActive;
 
     bool clicked = false;
     float birdX;
@@ -34,7 +36,11 @@ public class spriteCreate : MonoBehaviour
         Color color = Color.white;
         transform.position = new Vector2(-2f, -2f);
         squareTemplate = GameObject.Find("SquareTemplate");
-        BT = GameObject.Find("Bird Token Grey");
+        BTG = GameObject.Find("Bird Token Grey");
+        BTB = GameObject.Find("Bird Token Blue");
+        BTActive = BTG;
+
+        SetBTActive(BTG);
 
         for (int x = 1; x <= boardDimX; x++)
         {
@@ -57,34 +63,17 @@ public class spriteCreate : MonoBehaviour
         minY = int.Parse(BoardSquares[0].transform.position.y.ToString());
         maxX = int.Parse(BoardSquares[BoardSquares.Count - 1].transform.position.x.ToString());
         maxY = int.Parse(BoardSquares[BoardSquares.Count - 1].transform.position.y.ToString());
-        int bx = Mathf.RoundToInt((maxX + 1) / 2);
-        int by= Mathf.RoundToInt((maxY + 1) / 2);
-        StartCoroutine(MoveTo(BT, new Vector2(Mathf.Round((maxX + 1) / 2), Mathf.Round((maxY + 1) / 2))));
-        BT.GetComponent<birdTokenInfo>().locationSquare = $"Square {bx}-{by}";
+        //int bx = Mathf.RoundToInt((maxX + 1) / 2);
+        //int by= Mathf.RoundToInt((maxY + 1) / 2);
+        //StartCoroutine(MoveTo(BTActive, new Vector2(bx, by)));
+        //BTActive.GetComponent<birdTokenInfo>().locationSquare = $"Square {bx}-{by}";
+
+        SetBTActive(BTB);
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && isMouseAllowed)
-        {
-            BT.GetComponent<Renderer>().material.color = Color.green;
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-            Debug.Log($"Mouse Button Down detected with Coordinate {mousePos.x} {mousePos.y}");
-            int x = Mathf.RoundToInt(mousePos.x);
-            int y = Mathf.RoundToInt(mousePos.y);
-            if (x > maxX || x < minX || y > maxY || y < minY) { Debug.Log($"Clicking outside of the board!!!!"); return; }
-            string clickedSquare = $"Square {x}-{y}";
-            GameObject GO = GameObject.Find(clickedSquare);
-            //GO.GetComponent<Renderer>().material.color = Color.clear;
-            if (BT.GetComponent<birdTokenInfo>().locationSquare == GO.name)
-            {
-                Debug.Log($"Click the square occupied by the bird token");
-                BT.GetComponent<Renderer>().material.color = Color.yellow;
-            }
-            StartCoroutine(MoveTo(BT, new Vector2(GO.transform.position.x, GO.transform.position.y)));
-            BT.GetComponent<birdTokenInfo>().locationSquare = GO.name;
-        }
+
     }
 
     private bool isEven(int i)
@@ -173,11 +162,32 @@ public class spriteCreate : MonoBehaviour
 
         if (GUI.Button(new Rect(10, 50, 500, 30), "Fetch Bird Token to Board Middle"))
         {
-            GameObject BT = GameObject.Find("Bird Token Grey");
-            GameObject sqtr = GameObject.Find("Square 5-5");
-            birdTokenInfo bti = BT.GetComponent<birdTokenInfo>();
-            bti.locationSquare = "Square 5-5";
-            StartCoroutine(MoveTo(BT, sqtr.transform.position));
+            GameObject sqtr = GameObject.Find("Square 8-7");
+            birdTokenInfo bti = BTActive.GetComponent<birdTokenInfo>();
+            bti.locationSquare = "Square 8-7";
+            StartCoroutine(MoveTo(BTActive, sqtr.transform.position));
+            SwitchBTActive();
+        }
+
+        if (Input.GetMouseButtonDown(0) && isMouseAllowed)
+        {
+            BTActive.GetComponent<Renderer>().material.color = Color.green;
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+            Debug.Log($"Mouse Button Down detected with Coordinate {mousePos.x} {mousePos.y}");
+            int x = Mathf.RoundToInt(mousePos.x);
+            int y = Mathf.RoundToInt(mousePos.y);
+            if (x > maxX || x < minX || y > maxY || y < minY) { Debug.Log($"Clicking outside of the board!!!!"); return; }
+            string clickedSquare = $"Square {x}-{y}";
+            GameObject GO = GameObject.Find(clickedSquare);
+            //GO.GetComponent<Renderer>().material.color = Color.clear;
+            if (BTActive.GetComponent<birdTokenInfo>().locationSquare == GO.name)
+            {
+                Debug.Log($"Click the square occupied by the bird token");
+                BTActive.GetComponent<Renderer>().material.color = Color.yellow;
+            }
+            StartCoroutine(MoveTo(BTActive, new Vector2(GO.transform.position.x, GO.transform.position.y)));
+            BTActive.GetComponent<birdTokenInfo>().locationSquare = GO.name;
         }
 
 
@@ -230,11 +240,11 @@ public class spriteCreate : MonoBehaviour
     private void ExecuteMove(string direction)
     {
         //GameObject BT = GameObject.Find("Bird Token Grey");
-        BT.GetComponent<Renderer>().material.color = Color.green;
-        GameObject NextSquare = FindSquare(BT.GetComponent<birdTokenInfo>().locationSquare, direction);
-        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BT.GetComponent<Renderer>().material.color = Color.red; ; return; }
-        StartCoroutine(MoveTo(BT, new Vector2(NextSquare.transform.position.x, NextSquare.transform.position.y)));
-        BT.GetComponent<birdTokenInfo>().locationSquare = NextSquare.name;
+        BTActive.GetComponent<Renderer>().material.color = Color.green;
+        GameObject NextSquare = FindSquare(BTActive.GetComponent<birdTokenInfo>().locationSquare, direction);
+        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BTActive.GetComponent<Renderer>().material.color = Color.red; return; }
+        StartCoroutine(MoveTo(BTActive, new Vector2(NextSquare.transform.position.x, NextSquare.transform.position.y)));
+        BTActive.GetComponent<birdTokenInfo>().locationSquare = NextSquare.name;
     }
 
     private IEnumerator MoveTo(GameObject GO, Vector2 topos)
@@ -249,7 +259,21 @@ public class spriteCreate : MonoBehaviour
     private bool MoveToPos(GameObject GO, Vector2 goalNode)
     {
         GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 5f * Time.deltaTime);
-        if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y) { return true; } else { return false; }
+        if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y) { SwitchBTActive(); return true; } else { return false; }
+    }
+
+    void SetBTActive(GameObject act)
+    {
+        BTActive.GetComponent<birdTokenInfo>().isActive = "No";
+        BTActive = act;
+        act.GetComponent<birdTokenInfo>().isActive = "Yes";
+        Debug.Log("Setting DB Active");
+    }
+
+    void SwitchBTActive()
+    {
+        if (BTG.GetComponent<birdTokenInfo>().isActive == "No") { SetBTActive(BTG); } else { SetBTActive(BTB); }
+        Debug.Log("Switching DB Active");
     }
 
     void Misc()

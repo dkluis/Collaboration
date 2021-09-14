@@ -6,5 +6,6 @@ public class birdTokenInfo : MonoBehaviour
 {
 
     public string locationSquare;
+    public string isActive;
 
 }
