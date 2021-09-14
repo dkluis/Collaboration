@@ -5,7 +5,7 @@ using UnityEngine;
 public class birdTokenInfo : MonoBehaviour
 {
 
-    public string locationSquare;
+    public string currentSquare;
+    public string previousSquare;
     public string isActive;
-
 }

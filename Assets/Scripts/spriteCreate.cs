@@ -10,25 +10,30 @@ public class spriteCreate : MonoBehaviour
 {
     public List<GameObject> BoardSquares;
     public GameObject squareTemplate;
+    public GameObject squareTile;
     private GameObject board;
     private Transform newsquare;
+    private Transform newtile;
     private GameObject BTG;
     private GameObject BTB;
     private GameObject BTActive;
+
+    Color oldColor = Color.clear;
+    GameObject oldSquare;
 
     bool clicked = false;
     float birdX;
     float birdY;
     bool isBirdMoving = false;
-    bool isMouseAllowed = false;
+    bool isMouseAllowed = true;
 
     int boardDimX = 20;  // 11
     int boardDimY = 20;   // 9
 
-    int minX;
-    int maxX;
-    int minY;
-    int maxY;
+    int minX = 1;
+    int maxX = 20;
+    int minY = 1;
+    int maxY = 20;
 
     private void Awake()
     {
@@ -36,6 +41,7 @@ public class spriteCreate : MonoBehaviour
         Color color = Color.white;
         transform.position = new Vector2(-2f, -2f);
         squareTemplate = GameObject.Find("SquareTemplate");
+        squareTile = GameObject.Find("SquareTileTemplate");
         BTG = GameObject.Find("Bird Token Grey");
         BTB = GameObject.Find("Bird Token Blue");
         BTActive = BTG;
@@ -47,15 +53,39 @@ public class spriteCreate : MonoBehaviour
             for (int y = 1; y <= boardDimY; y++)
             {
                 color = Color.white;
-                if (isEven(x) && isEven(y)) { color = Color.black; }
-                if (!isEven(x) && !isEven(y)) { color = Color.black; }
+                if (isEven(x) && isEven(y)) { color = Color.gray; }
+                if (!isEven(x) && !isEven(y)) { color = Color.gray; }
 
                 newsquare = Instantiate(squareTemplate.transform, new Vector2(x, y), Quaternion.identity);
+                var nsi = newsquare.GetComponent<squareInfo>();
                 newsquare.name = $"Square {x}-{y}";
                 newsquare.parent = board.transform;
                 newsquare.transform.position = new Vector2(x, y);
-                GameObject col = GameObject.Find(newsquare.name);
-                col.GetComponent<Renderer>().material.color = color;
+                var nspx = newsquare.transform.position.x;
+                var nspy = newsquare.transform.position.y;
+                if (x == minX) { nsi.LeftBoundary = true; }
+                if (x == maxX) { nsi.RightBoundary = true; }
+                if (y == minY) { nsi.DownBoundary = true; }
+                if (y == maxY) { nsi.UpBoundary = true; }
+                nsi.baseColor = color;
+                newsquare.GetComponent<Renderer>().material.color = color;
+
+                newtile = Instantiate(squareTile.transform, new Vector2(x, y), Quaternion.identity);
+                newtile.name = $"Tile {x}-{y}";
+                newtile.parent = board.transform;
+                newtile.transform.position = new Vector2(x, y);
+
+
+                /*
+                if (color == Color.white)
+                {
+                    newtile.GetComponent<Renderer>().material.color = Color.black;
+                }
+                else
+                {
+                    newtile.GetComponent<Renderer>().material.color = Color.white;
+                }
+                */
             }
         }
         GetAllSquares();
@@ -164,12 +194,12 @@ public class spriteCreate : MonoBehaviour
         {
             GameObject sqtr = GameObject.Find("Square 8-7");
             birdTokenInfo bti = BTActive.GetComponent<birdTokenInfo>();
-            bti.locationSquare = "Square 8-7";
+            bti.currentSquare = "Square 8-7";
             StartCoroutine(MoveTo(BTActive, sqtr.transform.position));
             SwitchBTActive();
         }
 
-        if (Input.GetMouseButtonDown(0) && isMouseAllowed)
+        if (Input.GetMouseButtonDown(0) && isMouseAllowed && !isBirdMoving)
         {
             BTActive.GetComponent<Renderer>().material.color = Color.green;
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -180,14 +210,17 @@ public class spriteCreate : MonoBehaviour
             if (x > maxX || x < minX || y > maxY || y < minY) { Debug.Log($"Clicking outside of the board!!!!"); return; }
             string clickedSquare = $"Square {x}-{y}";
             GameObject GO = GameObject.Find(clickedSquare);
-            //GO.GetComponent<Renderer>().material.color = Color.clear;
-            if (BTActive.GetComponent<birdTokenInfo>().locationSquare == GO.name)
+            oldColor = GO.GetComponent<Renderer>().material.color;
+            oldSquare = GO;
+            GO.GetComponent<Renderer>().material.color = Color.cyan;
+            if (BTActive.GetComponent<birdTokenInfo>().currentSquare == GO.name)
             {
                 Debug.Log($"Click the square occupied by the bird token");
                 BTActive.GetComponent<Renderer>().material.color = Color.yellow;
             }
             StartCoroutine(MoveTo(BTActive, new Vector2(GO.transform.position.x, GO.transform.position.y)));
-            BTActive.GetComponent<birdTokenInfo>().locationSquare = GO.name;
+            BTActive.GetComponent<birdTokenInfo>().previousSquare = BTActive.GetComponent<birdTokenInfo>().currentSquare;
+            BTActive.GetComponent<birdTokenInfo>().currentSquare = GO.name;
         }
 
 
@@ -199,52 +232,60 @@ public class spriteCreate : MonoBehaviour
         if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Keypad8)) && !isBirdMoving)
         {
             ExecuteMove("Up");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Keypad2)) && !isBirdMoving)
         {
             ExecuteMove("Down");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Keypad4)) && !isBirdMoving)
         {
             ExecuteMove("Left");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.Alpha6) || Input.GetKey(KeyCode.Keypad6)) && !isBirdMoving)
         {
             ExecuteMove("Right");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.Keypad9) || Input.GetKey(KeyCode.Alpha9)) && !isBirdMoving)
         {
             ExecuteMove("UpRight");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.Keypad7) || Input.GetKey(KeyCode.Alpha7)) && !isBirdMoving)
         {
             ExecuteMove("UpLeft");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.Keypad1) || Input.GetKey(KeyCode.Alpha1)) && !isBirdMoving)
         {
             ExecuteMove("DownLeft");
+            SwitchBTActive();
         }
 
         if ((Input.GetKey(KeyCode.Keypad3) || Input.GetKey(KeyCode.Alpha3)) && !isBirdMoving)
         {
             ExecuteMove("DownRight");
+            SwitchBTActive();
         }
     }
 
     private void ExecuteMove(string direction)
     {
-        //GameObject BT = GameObject.Find("Bird Token Grey");
         BTActive.GetComponent<Renderer>().material.color = Color.green;
-        GameObject NextSquare = FindSquare(BTActive.GetComponent<birdTokenInfo>().locationSquare, direction);
-        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BTActive.GetComponent<Renderer>().material.color = Color.red; return; }
+        GameObject NextSquare = FindSquare(BTActive.GetComponent<birdTokenInfo>().currentSquare, direction);
+        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BTActive.GetComponent<Renderer>().material.color = Color.red; SwitchBTActive(); return; }
         StartCoroutine(MoveTo(BTActive, new Vector2(NextSquare.transform.position.x, NextSquare.transform.position.y)));
-        BTActive.GetComponent<birdTokenInfo>().locationSquare = NextSquare.name;
+        BTActive.GetComponent<birdTokenInfo>().previousSquare = BTActive.GetComponent<birdTokenInfo>().currentSquare;
+        BTActive.GetComponent<birdTokenInfo>().currentSquare = NextSquare.name;
     }
 
     private IEnumerator MoveTo(GameObject GO, Vector2 topos)
@@ -254,25 +295,28 @@ public class spriteCreate : MonoBehaviour
         while (!MoveToPos(GO, topos)) { yield return null; };
         yield return new WaitForSeconds(0.05f);
         isBirdMoving = false;
+        SwitchBTActive();
     }
 
     private bool MoveToPos(GameObject GO, Vector2 goalNode)
     {
         GO.transform.position = Vector2.MoveTowards(GO.transform.position, goalNode, 5f * Time.deltaTime);
-        if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y) { SwitchBTActive(); return true; } else { return false; }
+        if (goalNode.x == GO.transform.position.x && goalNode.y == GO.transform.position.y) { return true; } else { return false; }
     }
 
     void SetBTActive(GameObject act)
-    {
+    {  
         BTActive.GetComponent<birdTokenInfo>().isActive = "No";
         BTActive = act;
         act.GetComponent<birdTokenInfo>().isActive = "Yes";
-        Debug.Log("Setting DB Active");
     }
 
     void SwitchBTActive()
     {
+        if (isBirdMoving) { return; }
         if (BTG.GetComponent<birdTokenInfo>().isActive == "No") { SetBTActive(BTG); } else { SetBTActive(BTB); }
+        // use previous color to reset color to base.
+        if (oldColor != Color.clear) { oldSquare.GetComponent<Renderer>().material.color = oldColor; oldColor = Color.clear; }
         Debug.Log("Switching DB Active");
     }
 
