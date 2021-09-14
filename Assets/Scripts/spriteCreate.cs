@@ -20,8 +20,8 @@ public class spriteCreate : MonoBehaviour
     bool isBirdMoving = false;
     bool isMouseAllowed = false;
 
-    int boardDimX = 11;
-    int boardDimY = 9;
+    int boardDimX = 20;  // 11
+    int boardDimY = 20;   // 9
 
     int minX;
     int maxX;

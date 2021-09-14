@@ -7,11 +7,11 @@ public class MoveCamera : MonoBehaviour
 
     void Update()
     {
-        if (_State == State.None && Input.GetMouseButtonDown(0)) InitDrag();
+        if (_State == State.None && Input.GetMouseButtonDown(1)) InitDrag();
 
-        if (_State == State.Dragging && Input.GetMouseButton(0)) MoveTheCamera();
+        if (_State == State.Dragging && Input.GetMouseButton(1)) MoveTheCamera();
 
-        if (_State == State.Dragging && Input.GetMouseButtonUp(0)) FinishDrag();
+        if (_State == State.Dragging && Input.GetMouseButtonUp(1)) FinishDrag();
     }
 
     #region Calculations
