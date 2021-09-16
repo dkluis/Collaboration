@@ -61,3 +61,11 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+
+.DS_Store
+
+.idea/.idea.Collaboration/.idea/encodings.xml
+
+.idea/.idea.Collaboration/.idea/indexLayout.xml
+
+.idea/.idea.Collaboration/.idea/vcs.xml

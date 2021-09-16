@@ -41,6 +41,20 @@ public class MoveCamera : MonoBehaviour
     }
     #endregion
 
+    public static void MoveTo(Transform player)
+    {
+        Camera.main.transform.LookAt(player);
+        //Camera.main.transform.eulerAngles = new Vector3(0, 0, 0);
+        /*
+        Vector3 actualPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -Camera.main.transform.position.z));
+        Vector3 dragDelta = actualPos - moveToPos;
+
+        //if (Math.Abs(dragDelta.x) < 0.00001f && Math.Abs(dragDelta.y) < 0.00001f) return;
+
+        Camera.main.transform.Translate(-dragDelta);
+        */
+    }
+
     public enum State
     {
         None,

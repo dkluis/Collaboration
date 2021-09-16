@@ -199,9 +199,16 @@ public class spriteCreate : MonoBehaviour
             SwitchBTActive();
         }
 
+        if (GUI.Button(new Rect(10, 90, 500, 30), "Move Camera to the Active Player"))
+        {
+            //birdTokenInfo bti = BTActive.GetComponent<birdTokenInfo>();
+            //Vector3 newPos= new Vector3(bti.transform.position.x, bti.transform.position.y, -Camera.main.transform.position.z);
+            MoveCamera.MoveTo(BTActive.transform);
+        }
+
         if (Input.GetMouseButtonDown(0) && isMouseAllowed && !isBirdMoving)
         {
-            BTActive.GetComponent<Renderer>().material.color = Color.green;
+            //BTActive.GetComponent<Renderer>().material.color = Color.green;
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
             Debug.Log($"Mouse Button Down detected with Coordinate {mousePos.x} {mousePos.y}");
@@ -216,19 +223,19 @@ public class spriteCreate : MonoBehaviour
             if (BTActive.GetComponent<birdTokenInfo>().currentSquare == GO.name)
             {
                 Debug.Log($"Click the square occupied by the bird token");
-                BTActive.GetComponent<Renderer>().material.color = Color.yellow;
+                //BTActive.GetComponent<Renderer>().material.color = Color.yellow;
             }
             StartCoroutine(MoveTo(BTActive, new Vector2(GO.transform.position.x, GO.transform.position.y)));
             BTActive.GetComponent<birdTokenInfo>().previousSquare = BTActive.GetComponent<birdTokenInfo>().currentSquare;
             BTActive.GetComponent<birdTokenInfo>().currentSquare = GO.name;
         }
 
-
+        /*
         if (GUI.Button(new Rect(10, 90, 500, 30), "Allow the Mouse to Move the Bird"))
         {
             if (isMouseAllowed) { isMouseAllowed = false; } else { isMouseAllowed = true; }
         }
-
+        
         if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Alpha8) || Input.GetKey(KeyCode.Keypad8)) && !isBirdMoving)
         {
             ExecuteMove("Up");
@@ -276,13 +283,15 @@ public class spriteCreate : MonoBehaviour
             ExecuteMove("DownRight");
             SwitchBTActive();
         }
+        */
     }
 
     private void ExecuteMove(string direction)
     {
-        BTActive.GetComponent<Renderer>().material.color = Color.green;
+        //BTActive.GetComponent<Renderer>().material.color = Color.green;
         GameObject NextSquare = FindSquare(BTActive.GetComponent<birdTokenInfo>().currentSquare, direction);
-        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BTActive.GetComponent<Renderer>().material.color = Color.red; SwitchBTActive(); return; }
+        //if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary"); BTActive.GetComponent<Renderer>().material.color = Color.red; SwitchBTActive(); return; }
+        if (NextSquare is null) { Debug.Log($"Hit the Upper Boundary");  return; }
         StartCoroutine(MoveTo(BTActive, new Vector2(NextSquare.transform.position.x, NextSquare.transform.position.y)));
         BTActive.GetComponent<birdTokenInfo>().previousSquare = BTActive.GetComponent<birdTokenInfo>().currentSquare;
         BTActive.GetComponent<birdTokenInfo>().currentSquare = NextSquare.name;
